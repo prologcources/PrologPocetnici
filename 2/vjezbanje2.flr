@@ -1,0 +1,47 @@
+Joza:osoba[roditelj->{Stef, Bara}, spol->musko].
+Stef:osoba[roditelj->{Stefica, Ivek}, spol->musko].
+Bara:osoba[roditelj->{Slavek, Marica}, spol->zensko].
+Ivek:osoba[spol->musko].
+Stefica:osoba[spol->zensko].
+Slavek:osoba[spol->musko].
+Marica:osoba[spol->zensko].
+
+?x[baka->?y]:-
+	?x:osoba[roditelj->?z],
+	?z:osoba[roditelj->?y],
+	?y:osoba[spol->zensko].
+
+?ja[predak->?oni] :-
+	?ja:osoba[roditelj->?o],
+	?o:osoba[roditelj->?oni].
+
+?x[djed->?y]:-
+	?x:osoba[roditelj->?o],
+	?o:osoba[roditelj->?y],
+	?y:osoba[spol->musko].
+
+
+zaposlenik::osoba.
+kupac::osoba.
+menadzer::zaposlenik.
+direktor::menadzer.
+stefica:kupac.
+ivek:zaposlenik.
+joza:menadzer.
+bara:direktor.
+ 
+ivek[ placa->100 ].
+joza[ placa->200 ].
+bara[ placa->300 ].
+
+/**sve place**/
+osobe[
+ukupne_place => _integer
+].
+
+zaposlenik[
+placa=> integer
+].
+
+osoba[ukupne_place => ?u]:-
+ ?u = sum{?_g | ?_:?osoba[placa->?_g]}.

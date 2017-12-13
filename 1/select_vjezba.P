@@ -1,0 +1,118 @@
+:- import member/2 from basics.
+:- ['/home/vjezbefoi/read_line'].
+:- auto_table. % uključujemo tzv. tabliranje
+
+/*sastoji od K - kolone, T -tablice, ima strukturu - terminal select, niz kolona, terminal from i niz tablica od kojih se selektira i ; kao zavrsetak*/
+select_klauzula( sk( K, T ) ) --> [select], kolone( K ), [from], tablice( T ), [';'].
+/*isto kao i prethodno ali imamo term where te ujedno imamo u strukturu O ogranicenja*/
+select_klauzula( sk( K, T, O ) ) --> [select], kolone( K ), [from], tablice( T ), [where], ogranicenja( O ), [';'].
+/*2 terminala order i by i kolone po kojima se selektira*/
+select_klauzula( sk( K, T, Ko ) ) --> [select], kolone( K ), [from], tablice( T ), [order], [by], kolone( Ko ), [';'].
+/*idemo top-down pa moramo definirati terminale kolone(), tablice(), ogranicenja() i kolone()*/
+select_klauzula( sk( K, T, O, Ko ) ) --> [select], kolone( K ), [from], tablice( T ), [where], ogranicenja( O ), [order], [by], kolone( Ko ), [';'].
+
+/*kolone u select klauzuli nije jedna kolona nego ih ima vise proizvoljne duljine. da bi se parsirala takva lista koristi se princip kao vezana lista
+
+ako imamo jednu kolonu tada tu jednu upisi u glavu kao jedini elemnt liste*/
+kolone( kolone( [ X ] ) ) --> spec_kolone( X ).
+/*ako ih imamo vise, prvu upisi u glavu a ostale rekurzivno pozovi i rezultat upisi u tijelo liste, te rekurzivno dobivamo kolone koje su navedene*/
+kolone( kolone( [ X | Y ] ) ) --> spec_kolone( X ), [','], kolone( kolone( Y ) ).
+
+/*2 nacina: tablica.kolona ili tocni naziv kolone
+prvi slucaj je ako imamo samo naziv kolone onda je on terminal koji je varijabilan
+[K] nije kljucna rijec kao select, where da bi to ogranicili onda se koriste ogranicenja unutar indukcijskog pravila koji se specificiraju unutar {} zagrada i ne cini dio strukture -> {nije_kljucna(K)} te on predstavlja novi upit u prologu
+*/
+spec_kolone( spec_kolone( K ) ) --> [K], { nije_kljucna( K ) }.
+/*kada imamo naziv tablice.naziv kolone onda se niti tablica niti naziv kolone ne smije biti kljucna rijec*/
+spec_kolone( spec_kolone( T, K ) ) --> [T], ['.'], [K], { nije_kljucna( T ), nije_kljucna( K ) }.
+
+/*not(member()).. taj X ne smije biti u skupu rijeci koje smo definirali u array-u*/
+nije_kljucna( X ) :-
+  Kljucne_rijeci = [ select, from, insert, into, values , where, order, by, '=', '>', '<', or, and, ',', '.', ')', '(' ],
+  not( member( X, Kljucne_rijeci ) ).
+
+
+/*moze biti vise tablica koje su odvojene zarezom, ako ih je vise, prvu upisi u glavu, rekurzivno pozivaj i rezultat upisuj u tijelo*/
+tablice( tablice( [ X ] ) ) --> spec_tablice( X ).
+tablice( tablice( [ X | Y ] ) ) --> spec_tablice( X ), [','], tablice( tablice( Y ) ).
+
+/*slicno spec_kolone : samo navedene tablica ili osoba o (tablica alijans) ne smiju biti kljucna rijec*/
+spec_tablice( spec_tablice( T ) ) --> [T], { nije_kljucna( T ) }.
+spec_tablice( spec_tablice( T, A ) ) --> [T], [A], { nije_kljucna( T ), nije_kljucna( A ) }.
+
+/*u where imamo ogranicenja
+ako je samo jedno ogranicenje tada ga upisi u izlaznu listu
+ako ih vise
+izmedu AND ili OR*/
+ogranicenja( ogranicenja( [ X ] ) ) --> spec_ogranicenja( X ).
+ogranicenja( ogranicenja( [ X | Y ] ) ) --> spec_ogranicenja( X ), [and], ogranicenja( ogranicenja( Y ) ).
+ogranicenja( ogranicenja( [ X | Y ] ) ) --> spec_ogranicenja( X ), [or], ogranicenja( ogranicenja( Y ) ).
+
+/*a == b gdje imamo kolonu ili operand k1 pa operator pa kolonu ili operator
+ogranicenje nad kolonama ili usporedivanja a > 1 sa konstantama*/
+spec_ogranicenja( spec_ogranicenja( K1, O, K2 ) ) --> kolona_ili_operand( K1 ), operator( O ), kolona_ili_operand( K2 ).
+
+/*kolona moze biti operand ili broj ili znakovni niz*/
+kolona_ili_operand( kolona( K ) ) --> spec_kolone( K ).
+kolona_ili_operand( broj( B ) ) --> [B], { number( B ) }.
+kolona_ili_operand( niz( N ) ) --> ['"'], niz( N ), ['"'].
+
+/*sto je znakovni niz, ako je on samo jedna rijec (simbol) tada on mora biti atom i ne smije biti znak navodnika - dio je nekog simbola da nije pocetak ili kraj*/
+niz( [ N ] ) --> [N], { atom( N ), not( N = '"' ) }.
+/*od vise simbola, tada je prvi terminal i da nije znak navodnika jer se time zatvara string*/
+niz( [ N | R ] ) --> [N], niz( R ), { atom( N ), not( N = '"' )  }.
+
+/*definiranje operatora*/
+operator( operator( '=' ) ) --> ['='].
+operator( operator( '<' ) ) --> ['<'].
+operator( operator( '>' ) ) --> ['>'].
+operator( operator( '<=' ) ) --> ['<'], ['='].
+operator( operator( '>=' ) ) --> ['>'], ['='].
+
+/*procitaj utipkano, i veze u varijablu L. prosljeduje select i dobivamo rezultat
+*/
+stablo :-
+  read_line( L ),
+  insert_klauzula( St, L, [] ),
+  write( St ).
+
+/*trace i notrace da znamo gdje je pogreska*/
+stablo_t :-
+  read_line( L ),
+  trace,
+  insert_klauzula( St, L, [] ),
+  notrace,
+  write( St ).
+
+/*stablo.
+select * from tablica;
+
+prepoznao select klauzulu, nasao neku kolone, gdje je jedna spec kolone * u from kaluzuli nasao tablice gdje je spec tabliec tablica koju smo napisati u select
+
+  stablo.
+  select ime, prezime from osoba;
+
+  select o.ime, p.naziv from osoba o, poruka p where o.email=p.posiljatelj;
+
+  select * from osoba where prezime = "pl. Zajec";
+
+
+  zadatak:
+  insert, update, create table
+*/
+
+insert_klauzula( sk(K, T1, T2) ) -->
+	[insert],
+	[into],
+	tablice(T1),
+	[select],
+	kolone(K),
+	[from],
+	tablice(T2),
+	[';'].
+
+/*isto kao select
+  stablo.
+  insert into o select * from osoba;*/
+
+/*update*/

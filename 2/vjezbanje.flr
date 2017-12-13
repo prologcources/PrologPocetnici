@@ -1,0 +1,62 @@
+osoba[
+        ime => _string,
+	prezime => _string,
+	adresa => _string,
+	godiste => _integer,
+	starost(_integer) => _integer
+    ].
+
+?osoba[starost(?sada) -> ?starost]:-
+	?osoba[godiste -> ?godiste],
+	?starost \is ?sada - ?godiste.
+
+
+doktor::osoba[
+        radno_vrijeme => struct,
+	pacijenti => pacijent
+    ].
+
+pacijent::osoba[
+        lijecnik => doktor
+    ].
+
+ivek : doktor [
+        ime -> ivek,
+	prezime -> presvetli,
+	godiste -> 1971,
+	radno_vrijeme -> od_do(7,15),
+	pacijenti -> {joza, bara}
+    ].
+
+bara : pacijent[ 
+	ime -> barica,
+	prezime -> jambrek,
+	godiste -> 1975,
+	lijecnik -> ivek
+].
+
+joza : pacijent[ 
+	ime -> joza,
+	prezime -> stefanec,
+	godiste -> 1965,
+	lijecnik -> ivek
+    ].
+
+
+zaposlenik[
+        ime=> _string,
+	prezime => _string,
+	nadredeni => menadzer,
+	odjel => _string
+    ].
+
+menadzer::zaposlenik[
+    podredeni(_string) => zaposlenik
+].
+
+ivek:zaposlenik[ ime->Ivan, prezime->Presvetli, nadredeni->bara, odjel->Marketing ].
+joza:zaposlenik[ ime->Josip, prezime->Prikratki, nadredeni->bara, odjel->Marketing ].
+bara:menadzer[ ime->Barica, prezime->Jambrek ].
+
+?manadzer[podredeni(?odjel) -> ?podredeni]:-
+	?podredeni = collectset{?_g|?_g:zaposlenik[nadredeni -> ?manadzer, odjel -> ?odjel]}.

@@ -1,0 +1,154 @@
+/*
+u prologu imali atom, ovdje je koji su opisnici klasa ili objekta
+
+  naziv_objekta: naziv_klase[
+   naziv_atributa -> vrijednost_atributa,
+   naziv_metode(parametri) -> rezultat
+  ]
+
+  primjer:
+  ivek : doktor [
+   ime -> ivan,
+   radno_vrijeme -> od_do(7,15),
+   pacijenti -> {joza, bara} //notacija skupa , gdje objekt ivek ima vezu VIŠE prema drugim objektima
+  ]
+
+  definicija schema
+  => naznacuju tipovi podataka
+
+  kada se radi meta programiranje, da li je semantika klase u redu i slicno
+
+  npr osoba[
+   ime => string,
+   starots(_integer) => _integer
+  ]
+
+  Hijerarhija klasa
+  - izrazi nasljedivanja
+  klasa_p :: klasa_n (klasa p nasljeduje od klase n)
+
+  doktor::osoba[
+   radno_vrijeme => struct
+   pacijenti => pacijent
+  ]
+
+  metode
+  bilo koji objekt koji ce imati metodu starot koji ce imati bilo koji dokument i vratit ce nam vrijednost 
+  ?osoba[starost(?sada) -> ?starost] :-
+   ?osoba[goriste -> ?godiste],
+   ?starost \is ?sada - ?godiste
+
+  ?_ dont care varijabla
+  ?  obicne varijable
+  \is - operatori 
+*/
+
+osoba[
+        ime => _string,
+	prezime => _string,
+	adresa => _string,
+	godiste => _integer,
+	starost(_integer) => _integer
+    ].
+
+?osoba[starost(?sada) -> ?starost]:-
+   ?osoba[godiste -> ?godiste],
+   ?starost \is ?sada - ?godiste.
+
+//doktor nasljeduje klasu osoba
+doktor::osoba[
+ radno_vrijeme => struct,
+ pacijent => pacijent
+].
+
+//pacijent nasljeduje klasu osoba
+pacijent::osoba[
+ lijecnik => doktor
+].
+
+//inicijaliziranje objekta iz klase doktor i pacijent
+ivek:doktor [
+ ime -> Ivan,
+ prezime -> Presvetli,
+ godiste -> 1971,
+ radno_vrijeme -> od_do(7,15),
+ pacijenti -> {joza, bara}
+].
+
+bara:pacijent[
+ ime -> Barica,
+ prezime -> Jambrek,
+ godiste -> 1975,
+ lijecnik -> ivek
+].
+
+joza:pacijent[
+ ime -> Joza,
+ prezime -> Stefanec,
+ godiste -> 1965,
+ lijecnik -> ivek
+].
+
+/*
+primjer:
+
+?_ : osoba [
+ime -> ?ime,
+prezime -> ?prezime].
+vraca i doktore i pacijente jer su oni osobe odnosno nasljeduju klasu osobe
+
+?_:pacijent[
+prezime -> ?prezime, 
+starost(2017) -> ?starost
+].
+
+vraćanje svih pacijenata starijih od 60 godina
+?_:pacijent[
+ime -> ?ime, 
+starost(2017) -> ?s
+],
+?_s > 60.
+
+vraćanje svih pacijenata doktora Presvetli
+?_: doktor[
+prezime -> Presvetli,
+pacijenti -> ?_pac],
+?_pac[
+ime-> ?ime,
+prezime -> ?prezime].
+
+spojilli smo vanjske kljuceve simpolicki -> preko ?_pac
+
+drugi nacin:
+od tog objekta nam daj pacijente i ispisi ime i prezime
+
+(?_dok : doktor[ 
+prezime -> Presvetli]).pacijenti[
+ime -> ?ime,
+prezime -> ?prezime
+].
+
+
+vraca radno vrijeme doktora
+ivek[radno_vrijeme -> od_do(?od, ?do)].
+
+drugi nacin sa operatorom tocka
+ivek-radno_vrijeme = od_do(?od, ?do).
+
+
+vracanje vrijeme svih doktora
+?_: doktor[radno_vrijeme -> od_do(?od, ?do)].
+
+drugi nacin:
+(?_ : doktor).radno_vrijeme = od_do(?od, ?do).
+
+
+agregirajuce operacije:
+agg - skupovi operator
+?X - varijabla agregacije (ona koja se nalazila na izlaznoj listi) 
+[?Gs] - lista grupirajućih (slicno group by klauzuli)
+| -bind
+query - upit mora sadrzavati ?X ako su navedeni dodatne agregirane varijable, sve ih mora sadrzavati
+
+min, max, collectbag - vraca listu svih rjesenja sa ponavljanja, collectset - vraca listu svih rjesenja bez ponavljanja
+*/

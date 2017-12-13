@@ -1,0 +1,27 @@
+/*recenica se sastoji od subjekta i predikaz
+ako se prepozna onda napisi u strukturu recenicu S P
+
+subjekt moze biti terminal ivek tada upisi u sintaksu subjekt(ivek)
+
+  recenica(S, [joza, spava], [])
+*/
+recenica(head(L, R)) --> subjekt(L), predikat(R).
+subjekt(subjekt(ivek))--> [ivek].
+subjekt(subjekt(joza))--> [joza].
+predikat(predikat(uci))--> [uci].
+predikat(subjekt(jede))--> [jede].
+predikat(predikat(spava))--> [spava].
+
+
+
+/*stablo
+root recenica
+lijevo subjekt
+lijevo joza
+
+desno predikat
+desno spava
+
+  http://tinyurl.com/lp-select
+  
+*/

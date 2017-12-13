@@ -1,0 +1,92 @@
+/*Zadatak 1.
+subjekti i predikati te objekti
+
+primjer
+recenica(X,Y, []).
+
+X = recenica(subjekt(Ivek), predikat(voli), objekt(sladoled))
+Y = [Ivek, voli, sladoled]
+*/
+/*
+ Rjesenje TOCNO
+recenica(recenica(S, P, O))--> subjekt(S), predikat(P), objekt(O).
+
+subjekt(subjekt(ivek))--> [ivek].
+subjekt(subjekt(stef))--> [stef].
+subjekt(subjekt(bara))--> [baza].
+
+predikat(predikat(uci))-->[uci].
+predikat(predikat(jede))--> [jede].
+predikat(predikat(gleda))--> [gleda].
+
+objekt(objekt(sladoled))--> [sladoled].
+objekt(objekt(kobasice))--> [kobasice].
+
+Rjesenje zadatka:
+*/
+
+:- import member/2 from basics.
+
+recenica(recenica(S,P,O))--> subjekt(S), predikat(P), objekt(O).
+subjekt(subjekt(S)) --> [S], {member(S, ['Ivek', 'Stef', 'Bara'])}.
+predikat(predikat(P)) --> [P], {member(P, [voli, jede, gleda])}.
+objekt(objekt(O)) --> [O], {member(O, [sladoled, kobasice])}.
+
+/*Zadatak 2
+implementiraj gramatiku koja prepoznaje if then else izraze oblika:
+  if(izraz)
+  then {naredbe}
+  [else {naredbe}]
+  
+  else je opcionalan. Gramatika treba konstruirati stablo sintakse.
+  (izraz i naredbe ne treba parsirati)
+
+  npr. selekcija(S, [if, '(', a, <, b, ')', then, '{', a, +,+, '}' ], []).
+  S = selekcija (if(uvjet([a,<,b])), then(naredbe([a,+,+])));
+
+  npr. selekcija(S, [if, '(', a, ')', then, '{', a, -,-, '}', else, '{', a, +, +, '}'], []).
+  S = selekcija(if(uvjet([a])), then(naredbe([a,-,-])), else(naredbe([a,+,+])));
+*/
+
+selekcija(selekcija(IF, THEN)) --> if(IF), then(THEN).
+selekcija(selekcija(IF, THEN, ELSE)) --> if(IF), then(THEN), else(ELSE).
+
+if(if(U)) --> [if], ['('], uvjet(U), [')'].
+
+/* [U], uvjet(uvjet(O)), {U \= ')'} rekurzivno pozivamo ponovo uvjet gdje mu proslijedujemo sve ostale elemente liste te imamo uvjet da taj trenutni element U (koji je zapravo glava liste) nije zatvorena zagrada. nismo imali definiranje kljucnih rijeci koje npr ne bi smjele biti u uvjetu nego nas samo zanima da je dosao kraj uvjeta odnosno da je zatvorena zagrada*/
+uvjet(uvjet([U])) --> [U], {U \= ')'}. 
+uvjet(uvjet([U|O])) --> [U], uvjet(uvjet(O)), {U \= ')'}.
+
+then(then(T))--> [then], ['{'], naredbe(T), ['}'].
+else(else(T))--> [else], ['{'], naredbe(T), ['}'].
+
+naredbe(naredbe([N])) --> [N], {N \= '}'}.
+naredbe(naredbe([N|O])) --> [N], naredbe(naredbe(O)), {N \= '}'}.
+
+/*
+Implementirajte predikat listaj/2 koji će na temelju zadanog naziva direktorija u izlaznoj varijabli vratiti listu običnih (plain) datoteka koje se u njemu nalaze te promijeniti trenutni direktorij u zadani.
+
+ npr.
+  listaj('/home/ssajcic/myPackages', L).
+*/
+
+
+
+/*Neka je zadana sljedeca baza znanja u F-logici:
+Joza:osoba[roditelj->{Stef, Bara}, spol->musko].
+Stef:osoba[roditelj->{Stefica, Ivek}, spol->musko].
+Bara:osoba[roditelj->{Slavek, Marica}, spol->zensko].
+Ivek:osoba[spol->musko].
+Stefica:osoba[spol->zensko].
+Slavek:osoba[spol->musko].
+Marica:osoba[spol->zensko].
+
+  Implementirajte metode baka i predak za klasu osoba. Primjer korištenja
+
+  flora2 ?- ?x[baka->?y].
+  ?x = Joza
+  ?y Marica
+
+  ?x = Joza
+  ?X Stefica
+*/

@@ -1,0 +1,20 @@
+:- import member/2 from basics.
+
+petlja( petlja( PV, U, P, N ) ) --> [for], ['('], pocetna_vrijednost( PV ), [';'], uvjet( U ), [';'], promjena( P ), [')'], ['{'], naredbe( N ), ['}'].
+
+pocetna_vrijednost( pocetna_vrijednost( [ G ] ) ) --> spec_izraz( G ).
+pocetna_vrijednost( pocetna_vrijednost( [ G | R ] ) ) --> spec_izraz( G ), pocetna_vrijednost( pocetna_vrijednost( R ) ).
+
+uvjet( uvjet( [ G ] ) ) --> spec_izraz( G ).
+uvjet( uvjet( [ G | R ] ) ) --> spec_izraz( G ), uvjet( uvjet( R ) ).
+
+promjena( promjena( [ G ] ) ) --> spec_izraz( G ).
+promjena( promjena( [ G | R ] ) ) --> spec_izraz( G ), promjena( promjena( R ) ).
+
+naredbe( naredbe( [ G ] ) ) --> spec_izraz( G ).
+naredbe( naredbe( [ G | R ] ) ) --> spec_izraz( G ), naredbe( naredbe( R ) ).
+
+spec_izraz( V ) --> [V], { nije_kljucna( V ) }.
+
+nije_kljucna( X ) :- Lista = [ '(', ')', '[', ']', '{', '}' ],
+		     not( member( X, Lista ) ).

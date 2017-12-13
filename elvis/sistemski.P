@@ -1,0 +1,17 @@
+[scrptutl].
+[lists].
+
+
+datum(D):-date(D),writeln(D).
+
+listaj(L):-L=ls,reverse(L,L1),L1.
+
+pomakni([X],L,N):-X1 is X+N,L=[X1].
+pomakni([G|R],L,N):-G1 is G+N,pomakni(R,L1,N),L=[G1|L1].
+
+
+kodiraj(L,K):-pomakni(L,L1,1),name(K,L1).
+kodiraj(L,K,N):-pomakni(L,L1,N),name(K,L1).
+
+
+

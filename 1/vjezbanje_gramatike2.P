@@ -1,0 +1,130 @@
+/*zelimo dobiti sljedece:
+
+ stablo.
+ select * from tablica;
+ sk(kolone([spec_kolone(*)]),tablice([spec_tablice(tablica)]))
+*/
+
+:- ['/home/ssajcic/read_line'].
+
+stablo :-
+	read_line(L),
+	select_klauzula(St, L, []),
+	write(St).
+
+select_klauzula(sk(K,T)) --> [select], ispis_kolona(K), [from], ispis_tablica(T), [';'].
+
+
+ispis_kolona(kolona([K|Y])) --> specijalne_kolone(K), [','], ispis_kolona(kolona(Y)).
+ispis_kolona(kolona([K])) --> specijalne_kolone(K).
+
+ispis_tablica(tablica([T])) --> [T].
+
+specijalne_kolone(spec_kolone([K])) --> [K].
+
+
+/*zelimo sljedece:
+ if, then
+
+  upisujemo::: selekcija(S, [if, '(', a, ')', then, '{', a, -,-, '}', else, '{', a, +, +, '}'], []).
+  
+  moramo dobiti: selekcija (if(uvjet([a,<,b])), then(naredbe([a,+,+])))
+*/
+
+
+selekcija(selekcija(U, N)) --> [if], ['('], uvjeti(U), [')'], [then], ['{'], naredbe(N), ['}'].
+
+uvjeti(uvjet([U])) --> [U].
+uvjeti(uvjet([U|R])) --> [U], uvjeti(uvjet(R)).
+
+
+naredbe(naredba([N])) --> [N].
+naredbe(naredba([N|Y])) --> [N], naredbe(naredba(Y)).
+
+/* zbrajanje i oduzimanje dvaju broja
+| ?- izraz( X, [ 2.1, '-', 55 ], [] ).
+X = izraz(prvi(2.1000),operator(-),drugi(55))
+no
+| ?- izraz( X, [ 17, '+', 22.43 ], [] ).
+X = izraz(prvi(17),operator(+),drugi(22.4300));
+*/
+
+izraz(izraz(A,X,B)) --> prvibroj(A), oper(X), drugibroj(B).
+prvibroj(prvi(A)) --> [A].
+drugibroj(drugi(B)) --> [B].
+oper(operator('-')) --> ['-'].
+oper(operator('+')) --> ['+'].
+
+/*Implementirajte gramatiku koja će prepoznavati i konstruirati parove osoba.
+Primjer korištenja:
+
+  | ?- par( X, [ joza, i, bara ], [] ).
+  X = par(joza,i,bara);
+
+*/
+osoba(joza).
+osoba(perica).
+osoba(marica).
+osoba(bara).
+
+par(par(X,i,Y)) --> p(X), ['i'], p(Y).
+p(D) --> [D], {osoba(D)}.
+
+/*Implementirajte gramatiku koja će prepoznavati jednostavne rečenice oblika:
+subjekt predikat objekt.
+Subjekti mogu biti:
+- Ivek
+- Stef
+- Bara
+Predikati mogu biti
+- voli
+- jede
+- gleda
+Objekti mogu biti
+- sladoled
+- kobasice
+
+?- recenica( X, Y, [] ).
+X = recenica(subjekt(Ivek),predikat(voli),objekt(sladoled))
+Y = [Ivek,voli,sladoled]; */
+
+recenica(receniva(S, P, O)) --> su(S), pre(P), obje(O).
+su(subjekt('Ivek')) --> ['Ivek'].
+su(subjekt('Ivek')) --> ['Stef'].
+su(subjekt('Ivek')) --> ['Bara'].
+pre(predikat(voli)) --> [voli].
+pre(predikat(voli)) --> [jede].
+pre(predikat(voli)) --> [gleda].
+obje(objekt(sladoled)) --> [sladoled].
+obje(objekt(sladoled)) --> [kobasice].
+
+/*
+for petlja
+  
+petlja( P, [ for, '(', int, i, '=', '0', ';', i, '<', '5', ';', i, '+', '+', ')', '{', x, '+', '=', i, ';', '}' ], []).
+P = petlja(pocetna_vrijednost([int,i,=,0]),uvjet([i,<,5]),promjena([i,+,+]), naredbe([x,+,=,i,;]));
+
+petlja( P, [ for, '(', int, j, '=', '{', '10', ';', j, '>', '=', '0',';', j, '-', '-', ')', '{', a, '+', '+', ')', ';', '}' ], [] ).
+*/
+
+
+  :- import member/2 from basics.
+
+petlja(petlja(P, U, Pr, N)) --> [for], ['('], pv(P), [';'], uvj(U), [';'], pro(Pr), [')'], ['{'], nar(N), ['}'].
+
+pv(pocetna_vrijednost([P])) --> [P], {nije_kljucna(P)}.
+pv(pocetna_vrijednost([P|R])) --> [P], pv(pocetna_vrijednost(R)), {nije_kljucna(P)}.
+
+uvj(uvjet([U])) --> [U],  {nije_kljucna(U)}.
+uvj(uvjet([U|R])) --> [U], uvj(uvjet(R)), {nije_kljucna(U)}.
+
+pro(promjena([Pr])) --> [Pr],  {nije_kljucna(Pr)}.
+pro(promjena([Pr|R])) --> [Pr], pro(promjena(R)), {nije_kljucna(Pr)}.
+
+nar(naredbe([N])) --> [N],  {nije_kljucna(N)}.
+nar(naredbe([N|R])) --> [N], nar(naredbe(R)), {nije_kljucna(N)}.
+
+nije_kljucna(X) :-
+	Kljucne_rijeci = ['}', '{', ')', '('],
+	not(member(X, Kljucne_rijeci)).
+

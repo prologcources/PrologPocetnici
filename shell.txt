@@ -1,0 +1,36 @@
+/*
+Implementirajte predikat listaj/2 koji će na temelju zadanog naziva direktorija u izlaznoj varijabli vratiti listu običnih 
+(plain) datoteka koje se u njemu nalaze, te promijeniti trenutni direktorij u zadani.
+Primjer korištenja:
+| ?- listaj( '/home/mschatte/myPackages' , L ).
+L = [apache-tomcat-6.0.18.tar.gz,exist.war,install_flash_player_10_linux.deb,openlaszlo.war];
+no
+| ?- shell( pwd ).
+/home/mschatte/myPackages
+yes
+| ?-
+*/
+
+:- [shell].
+
+listaj(N, L) :- cd(N), findall( _X, (list_directory( '.', _X), is_plain_file(_X)), L ).
+/*
+listaj(N, L) :- shell_to_list('pwd', T,_E), cd(N), findall( _X, (list_directory( '.', _X), 
+    is_plain_file(_X)), L ), T = [[D]], cd(D).
+*/
+
+
+/*
+Potrebno je implementirati predikat lista_datoteka/2 koji će vratiti sortiranu listu običnih (plain) datoteka u 
+ zadanom direktoriju u sljedećem obliku:
+[dat( datoteka_1 ), ..., dat( datoteka_n )]
+Pri tome se smijete koristiti ugrađenim predikatima.
+Primjer korištenja:
+| ?- lista_datoteka( '.', L ).
+L = [dat(k1.P),dat(k1.P~),dat(k1.xwam)];
+no
+*/
+
+lista_datoteka(D,L) :- shell_to_list('pwd', T,_Err), cd(D), setof(dat(_X), (list_directory( '.', _X), is_plain_file(_X)), L ), 
+  T = [[E]], cd(E).
+  

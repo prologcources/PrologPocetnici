@@ -1,0 +1,15 @@
+a : cvor[ brid -> { b, c, d } ].
+b : cvor[ brid -> { c, e } ].
+c : cvor[ brid -> { e, d } ].
+d : cvor[ brid -> f ].
+e : cvor[ brid -> f ].
+f : cvor.
+
+?cvor[ put -> ?x ] :- ?cvor[ brid -> ?x ].
+?cvor[ put -> ?x ] :- ?cvor[ brid -> ?y ],
+		      ?y : cvor[ put -> ?x ].
+
+?cvor[ duljina( ?x ) -> ?y ] :- ?cvor[ brid -> ?x ], ?y = 1.
+?cvor[ duljina( ?x ) -> ?y ] :- ?cvor[ brid -> ?z ],
+				?z : cvor[ duljina( ?x ) -> ?y1 ],
+				?y \is ?y1 + 1.

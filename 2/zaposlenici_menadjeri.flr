@@ -1,0 +1,17 @@
+zaposlenik[ime=>string,
+	    prezime=>string,
+	    nadredjeni=>menadzer,
+	    odjel=>string
+	  ].
+
+menadzer::zaposlenik[
+		      podjedjeni(string)=>zaposlenik
+		    ].
+
+?menadzer[podredjeni(?odjel)->?podredjeni]:-
+	?podredjeni=collectset{?_zaposleni|?_zaposleni:zaposlenik[nadredjeni->?menadzer, odjel->?odjel]}.
+
+Ivek:zaposlenik[ime->Ivan, prezime->Presvetli, nadredjeni->Bara, odjel->Marketing].
+Joza:zaposlenik[ime->Joza, prezime->Prikratki, nadredjeni->Bara, odjel->Marketing].
+Bara:menadzer[ime->Barica, prezime->Jambrek].
+

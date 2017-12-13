@@ -1,0 +1,15 @@
+:- import member/2 from basics.
+:- [read_line].
+:- auto_table.			% uključujemo tzv. tabliranje
+
+
+%operator(operator(' minus '))-->['-'].
+				%operator(operator(' plus '))-->['+'].
+operator(operator(X))-->[X],{operatori(X)}.
+operatori(X):-ListaOperatora=['+','-','*','/'],member(X,ListaOperatora).
+
+
+prvi(prvi(X))-->[X],{number(X)}.
+drugi(drugi(X))-->[X],{number(X)}.
+
+izraz(izraz(X,Op,Y))-->prvi(X),operator(Op),drugi(Y).

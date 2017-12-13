@@ -1,0 +1,15 @@
+:- import member/3 from basics.
+:- import member/2 from basics.
+
+
+:- op(600,fx,\-).
+:- op(650,xfx,=>).
+
+\-L=>L2:-izbaciZadnji(L,_L1),L2=_L1.
+
+izbaciZadnji([E],[]).
+izbaciZadnji([G|R],L):-izbaciZadnji(R,L1),L=[G|L1].
+
+%upotreba : \-[1,2,3,4,5,6]=>L.
+
+

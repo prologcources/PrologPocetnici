@@ -1,0 +1,24 @@
+/*vjezbanje gramatike*/
+recenica --> subjekt, predikat.
+subjekt --> [joza].
+subjekt --> [ana].
+predikat --> [jede].
+predikat --> [spava].
+
+sestrinstvo(sestra(S, S2)) --> sestra1(S), sestra2(S2).
+sestra1(sister(ivana)) --> [ivana].
+sestra2(sisterka(ana)) --> [ana].
+
+
+/*napisati recenica (X, Y, []).
+X = recenica(subjekt(Ivek), predikat(voli), objekt(sladoled))
+Y = [Ivek, voli, sladoled]
+*/
+recenica(recenica(S, P, O)) --> su(S), pre(P), obj(O).
+su(subjekt(ivek)) --> [ivek].
+su(subjekt(ana)) --> [ana].
+pre(predikat(voli)) --> [voli].
+pre(predikat(jede)) --> [jede].
+obj(objekt(sladoled)) --> [sladoled].
+obj(objekt(macku)) --> [macka].
+

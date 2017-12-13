@@ -1,0 +1,35 @@
+Joza:osoba[roditelj->{Stef, Bara}, spol->musko].
+Stef:osoba[roditelj->{Stefica, Ivek}, spol->musko].
+Bara:osoba[roditelj->{Slavek, Marica}, spol->zensko].
+Ivek:osoba[spol->musko].
+Stefica:osoba[spol->zensko].
+Slavek:osoba[spol->musko].
+Marica:osoba[spol->zensko].
+
+?U[baka -> ?B] :-
+	?U[roditelj -> ?X],
+	?X[roditelj-> ?B],
+	?B[spol->zensko].
+
+?U[predak -> ?P]:
+?U[roditelj->?P].
+?U[predak->?P]:-
+	?X[roditelj->?P],
+	?U[predak->?X].
+
+/*X je kao neki izmisljeni ?!?*/
+
+/* Implementirajte objekt shell u Flori-2 koji ima metodu rename/2 koja u prvom argumentu prima naziv datoteke u trenutnom direktoriju a u drugom novi naziv datoteke te mijenja naziv datoteke u zadani novi(mijenja se naziv datoteke u trenutnom direktoriju).
+
+flora2 ?- shell[rename('vozila.xml', 'prometala.xml')].
+rezultat: datoteka vozila.xml u trenutnom direktoriju je sada prometala.xml
+
+*/
+
+shell[rename(?d1, ?d2)]:-
+	rename(?d1, ?d2)@\plg(shell).
+
+
+shell[ls(?dir) -> ?R] :- list_directory(?dir, ?R)@\plg(shell).
+
+shell[pwd-> ?dirg :- shell_to_list('pwd', ?dir, ?_)@\plg(shell).

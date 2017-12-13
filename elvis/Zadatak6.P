@@ -1,0 +1,9 @@
+:- import member/2 from basics.
+:- [read_line].
+:- auto_table.			% uključujemo tzv. tabliranje
+
+osoba('Joza')-->[joza].
+osoba('Bara')-->[bara].
+osoba('Ivek')-->[ivek].
+
+par(par(X,'i',Y))-->osoba(X),[i],osoba(Y).

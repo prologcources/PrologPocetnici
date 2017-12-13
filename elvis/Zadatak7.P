@@ -1,0 +1,12 @@
+subjekt(subjekt('Ivek'))-->[ivek].
+subjekt(subjekt('Stef'))-->[stef].
+subjekt(subjekt('Bara'))-->[bara].
+
+predikat(predikat('voli'))-->[voli].
+predikat(predikat('jede'))-->[jede].
+predikat(predikat('gleda'))-->[gleda].
+
+objekt(objekt('sladoled'))-->[sladoled].
+objekt(objekt('kobasice'))-->[kobasice].
+
+recenica(recenica(S,P,O))-->subjekt(S),predikat(P),objekt(O).

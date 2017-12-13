@@ -1,0 +1,79 @@
+/* program koji provjerava ispravnost SELECT SQL naredbe */
+
+:- import member/2 from basics.
+:- ['/home/vjezbefoi/Documents/g2/read_line'].
+:- auto_table. % uključujemo tzv. tabliranje
+
+select_klauzula( sk( K, T ) ) --> [select], kolone( K ), [from], tablice( T ), [';'].
+select_klauzula( sk( K, T, O ) ) --> [select], kolone( K ), [from], tablice( T ), [where], ogranicenja( O ), [';'].
+select_klauzula( sk( K, T, Ko ) ) --> [select], kolone( K ), [from], tablice( T ), [order], [by], kolone( Ko ), [';'].
+select_klauzula( sk( K, T, O, Ko ) ) --> [select], kolone( K ), [from], tablice( T ), [where], ogranicenja( O ), [order], [by], kolone( Ko ), [';'].
+
+kolone( kolone( [ X ] ) ) --> spec_kolone( X ).
+kolone( kolone( [ X | Y ] ) ) --> spec_kolone( X ), [','], kolone( kolone( Y ) ). % rekurzivni poziv istog pravila - na taj način se omogućuje specificiranje više atributa kod SELECT klauzule (u zadnjem rekurzivnom pozivu se poziva gornje pravilo, tj. kad se lista sastoji od samo jednog jedinog elementa)
+
+spec_kolone( spec_kolone( K ) ) --> [K], { nije_kljucna( K ) }. % specificira naziv atributa tablice - ne smije biti jednaka ključnoj riječi
+spec_kolone( spec_kolone( T, K ) ) --> [T], ['.'], [K], { nije_kljucna( T ), nije_kljucna( K ) }.  % omogućuje specificiranje naziva atributa uz sam naziv tablice (npr. kad postoji autor.naziv i knjiga.naziv)
+
+nije_kljucna( X ) :-
+  Kljucne_rijeci = [ select, from, where, order, by, '=', '>', '<', or, and, ',', '.' ],
+  not( member( X, Kljucne_rijeci ) ).
+
+tablice( tablice( [ X ] ) ) --> spec_tablice( X ).
+tablice( tablice( [ X | Y ] ) ) --> spec_tablice( X ), [','], tablice( tablice( Y ) ).  % navođenje više tablica, npr. SELECT * FROM autor, knjiga (za dobivanje kartezijevog produkta između podataka tih dviju tablica)
+
+spec_tablice( spec_tablice( T ) ) --> [T], { nije_kljucna( T ) }.  % specificira naziv tablice
+spec_tablice( spec_tablice( T, A ) ) --> [T], [A], { nije_kljucna( T ), nije_kljucna( A ) }.
+
+ogranicenja( ogranicenja( [ X ] ) ) --> spec_ogranicenja( X ).
+ogranicenja( ogranicenja( [ X | Y ] ) ) --> spec_ogranicenja( X ), [and], ogranicenja( ogranicenja( Y ) ).  % rekurzivno se poziva za spajanje 2 ili više pravila
+ogranicenja( ogranicenja( [ X | Y ] ) ) --> spec_ogranicenja( X ), [or], ogranicenja( ogranicenja( Y ) ).  % isto tako
+
+spec_ogranicenja( spec_ogranicenja( K1, O, K2 ) ) --> kolona_ili_operand( K1 ), operator( O ), kolona_ili_operand( K2 ).  % specifikacija jednog ograničenja/pravila
+
+kolona_ili_operand( kolona( K ) ) --> spec_kolone( K ).
+kolona_ili_operand( broj( B ) ) --> [B], { number( B ) }.
+kolona_ili_operand( niz( N ) ) --> ['"'], niz( N ), ['"'].
+
+niz( [ N ] ) --> [N], { atom( N ), not( N = '"' ) }.   % za definiranje da se znak '"' ne može nalaziti unutar stringa
+niz( [ N | R ] ) --> [N], niz( R ), { atom( N ), not( N = '"' )  }.
+
+operator( operator( '=' ) ) --> ['='].
+operator( operator( '<' ) ) --> ['<'].
+operator( operator( '>' ) ) --> ['>'].
+operator( operator( '<=' ) ) --> ['<'], ['='].
+operator( operator( '>=' ) ) --> ['>'], ['='].
+
+stablo :-
+  read_line( L ),
+  select_klauzula( St, L, [] ),
+  write( St ).   % ispisuje se stablo sintakse
+  
+stablo_t :-
+  read_line( L ),
+  trace,
+  select_klauzula( St, L, [] ),
+  notrace,
+  write( St ).  % za debugging select klauzule
+/*
+insert_klauzula(ik(K,T1, T2)) --> [insert], [into], tablice(T1),  [select], kolone( K ), [from], tablice( T2 ), [';'].
+insert_klauzula(ik(K,T1, T2)) --> [insert], [into], tablice(T1), [select], kolone( K ), [from], tablice( T2 ), [where], ogranicenja( O ), [';'].
+insert_klauzula(ik(K,T1, T2)) --> [insert], [into], tablice(T1), [select], kolone( K ), [from], tablice( T2 ), [where], ogranicenja( O ), [order], [by], kolone( Ko ), [';'].
+
+insert_klauzula(ik(K,T,
+
+stablo_insert :-
+  read_line( L ),
+  insert_klauzula( St, L, [] ),
+  write( St ).			% ispisuje se stablo sintakse
+*/
+update_klauzula(update_klauzula(T,O,I)) --> [update], tablice(T), [set], inicijalizacije(I), [where], ogranicenja(O), [';'].
+inicijalizacija(inicijalizacija(K,I)) --> spec_kolone( K ), ['='], kolona_ili_operand(I).
+
+inicijalizacije( inicijalizacije( [ X ] ) ) --> inicijalizacija( X ).
+inicijalizacije( inicijalizacije( [ X | Y ] ) ) --> inicijalizacija( X ), [','], inicijalizacije( inicijalizacije( Y ) ).  % rekurzivno se poziva za spajanje 2 ili više pravila
+
+stablo_update :-
+  read_line( L ),
+  update_klauzula( St, L, [] ),
+  write( St ).

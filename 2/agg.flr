@@ -1,0 +1,110 @@
+ivek:osoba[godine-> 32, spol -> musko].
+joza:osoba[godine-> 31, spol -> musko].
+bara:osoba[godine-> 25, spol -> zensko].
+/*
+?x = avg{ ?_g | ?_:osoba[godine->?_g]}.
+
+grupiranje - varijabla g gdje je jedna varijabla za grupiranje s, 
+
+?x = avg{
+?_g [?_s] | 
+?_:osoba[
+godine -> ?_g,
+spol -> ?_s
+]}.
+
+?x = collectset{ ?_o [?_s] | 
+?_o:osoba[spol -> ?_s]}.
+
+moduli
+- kompleksniji kod dijelimo na više djelova
+ona se u flori 2 zapravo sastoji od naziva i sadrzaja (sadrzaj - prog.kod)
+
+[agg>>go1].
+
+postavljanje upita nad modulima tako da stavljamo upit @ modul
+?x:osoba @ go1.
+//daj mi sve instance osoba iz modula go1
+
+daj mi sve instance osoba iz modula odnosno u kojem modulu to vrijedi
+?x:osoba @ ?modul.
+
+\prolog -omogucuje interakciju s predikazima iz XSB
+
+writeln('Pozdrav iz prologa')@\prolog.
+
+//možemo pozvati bilo kaj od prologovih modula
+predikat@\prolog(naziv_modula) gdje je naziv modula gdje se prolog nalazi
+
+?x = [1,2,3], member(?y, ?x)@\prolog(basics).
+ls@\plg(shell).
+
+
+ažuriranje baza znanja - insert, delete, erase, insertrule, deleterule...
+{izraz|upit} izraz koji ce se ubaciti u bazu znanja s uvjetom da ce se zadovoljiti uvjet
+
+
+insert{
+ iva:osoba
+}.
+
+insert{
+ iva:osoba@go1
+}.
+
+*/
+
+
+osoba[
+ ime => _string,
+ prezime => _string
+].
+
+student::osoba[
+ slusa -> struct
+].
+
+nastavnik::osoba[
+ predaje -> struct
+].
+
+kolegij[
+ naziv => _string,
+ upisani(_integer) => student,
+ predavaci(_integer) => nastavnik
+].
+
+martina:student[
+ ime -> Martina,
+ prezime -> Martic,
+  slusa -> ag(Hrvatski, 2017)
+].
+
+ivan:student[
+ ime -> Ivan,
+ prezime -> Ivanic,
+ slusa -> ag(Matematika, 2017)
+].
+
+kristijan:nastavnik[
+ ime -> Kristijan,
+ prezime -> Kristi,
+ predaje -> ag(Matematika, 2017)
+].
+
+matematika:kolegij[
+ naziv -> Matematika,
+ upisani -> upisani(2017),
+ predavaci -> predavaci(2017)
+].
+
+hrvatski:kolegij[
+ naziv -> Hrvatski,
+ upisani -> upisani(2016),
+ predavaci -> predavaci(2016)
+].
+
+/*
+(?_:kolegij).naziv
+
+*/

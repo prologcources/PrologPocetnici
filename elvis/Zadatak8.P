@@ -1,0 +1,20 @@
+:- import member/2 from basics.
+:- [read_line].
+:- auto_table. % uključujemo tzv. tabliranje
+
+selekcija(selekcija(L1,L2))-->['if'],['('],if(L1),[')'],
+	['then'],['{'],then(L2),['}'].
+selekcija(selekcija(L1,L2,L3))-->['if'],['('],if(L1),[')'],
+	['then'],['{'],then(L2),['}'],
+	['else'],['{'],else(L3),['}'].
+
+if(if(L))-->uvjet(L).
+then(then(L))-->naredbe(L).
+else(else(L))-->naredbe(L).
+
+uvjet(uvjet([L]))-->[L],{atom(L),not(L=')')}.
+uvjet(uvjet([G|R]))-->[G],uvjet(uvjet(R)),{atom(G), not(G=')')}.
+
+naredbe(naredbe([L]))-->[L],{atom(L),not(L='}')}.
+naredbe(naredbe([G|R]))-->[G],naredbe(naredbe(R)),{atom(G),not(G='}')}.
+

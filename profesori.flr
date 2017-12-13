@@ -1,0 +1,30 @@
+osoba[
+	ime => _string,
+	prezime => _string
+].
+
+kolegij[
+	naziv => _string,
+	upisani( _integer ) => student,
+	predavaci( _integer ) => profesor
+].
+
+nastavnik :: osoba[
+	predaje => ag( kolegij, _integer )
+].
+
+student :: osoba[
+	slusa => ag( kolegij, _integer )
+].
+
+?kolegij[ upisani( ?godina ) -> ?studenti ] :-
+	?studenti = collectset{ ?s | ?_student[ ime -> ?ime,
+						prezime -> ?prezime,
+						slusa -> ag( ?kolegij, ?godina ) ],
+		    concat_atom( [ ?ime, ' ', ?prezime ], ?s )@\plg( string ) }.
+
+?kolegij[ predavaci( ?godina ) -> ?nastavnici ] :-
+	?nastavnici = collectset{ ?n | ?_nastavnik[ ime -> ?ime,
+						    prezime -> ?prezime,
+						    predaje -> ag( ?kolegij, ?godina ) ],
+		      concat_atom( [ ?ime, ' ', ?prezime ], ?n )@\plg( string ) }.

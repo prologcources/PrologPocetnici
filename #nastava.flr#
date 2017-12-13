@@ -1,0 +1,15 @@
+osoba[ ime => _string, prezime => _string].
+
+nastavnik::osoba[
+ predaje => ag(kolegij, _integer)
+].
+
+kolegij[
+naziv => _string,
+upisan(_integer) => student,
+predavac(_integer) => profesor
+].
+
+student::osoba[
+slusa=> ag(kolegij, _integer).
+]

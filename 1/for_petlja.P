@@ -1,0 +1,10 @@
+petlja(petlja(P,U,Pr,N)) --> [for],['('],pocetni(P),[';'],uvjet(U),[';'],promjena(Pr),[')'],['{'],naredbe(N),['}'].
+
+pocetni(pocetni(P)) --> niz(P).
+uvjet(uvjet(U)) --> niz(U).
+promjena(promjena(Pr)) --> niz(Pr).
+naredbe(naredbe(N)) --> niz(N).
+
+
+niz([G])-->[G].
+niz([G|R])-->[G],niz(R),{G\=='(',G\==';'}.

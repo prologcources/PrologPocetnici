@@ -1,0 +1,61 @@
+/*
+  gramatike
+  ========
+  -sluze za sintakse
+  -sintakse - vezana uz jezik, pravila
+  jezik se sastoji: semantika, pragmatika, sintaksa
+
+  ljudski jezik je prirodno kontekstualan
+  vecina prog jezika su nekontekstualni, za svaku naredbu imamo odredenu semantiku
+
+  da bi napravili vlasitti programski jezik i kompajler
+
+  sastoji od :
+  * tokene - simboli koji se dalje ne mogu dijeliti , npr rijeci, ili korijen rijeci koji mogu imati svoje nastavke. u prog.jeziku su to kljucne rijeci - if,while
+
+  * sekevence, fraze kod sastavljenih recenica - i dalje se moreaju anilizirati dok ne dodemo do terminala
+  * produkcijaksa pravila - na temelju kojih pravila se ponasaju sekvence
+  * pocetni simbol - od kuda pocinjemo analizu
+
+  S0 --> S1 desna strana terminal i no-terminal dok je lijeva strana no-terminal
+
+  PRIMJER
+  =======
+  npr. skup terminala ivek, joza, uci, [jede], [spava]
+  sve sto je unutar [] je terminal
+
+  non-terminali se pisu kao atomi _
+  recenica subjekt predikat
+
+  pocetni simbol: recenica
+*/
+
+recenica-->subject, predikat.
+subject --> [ivek].
+subject --> [joza].
+predikat --> [uci].
+predikat --> [jede].
+predikat --> [spava].
+
+/*
+recenica([ivek, jede], []).
+  [] je ostatak
+  odgovara sustav sa yes jer je on prepoznao da je ulazni simpol prepozna kao ulazna gramatika, koji spada u subjekte i spada u non-terminal recenice. mora naci predikat koji jede spada u terminal predikat
+
+  recenica([spava, ivek], []).
+  odgovor je no
+  jer je prvi predikat a treba biti subject
+
+  PRIMJER
+  ======
+  recenica([ivek,spava, joza], []).
+  ulaz simbola moze biti dugacak, ono sto radi predikat, pokusava spoznati najkraci koji zadovoljava recenicu. a to je prvi dio
+
+  SINTAKSNA STABLA
+  - ne daje od kojih komponenata se sastoji recenica
+  kada se prepozna neka recenica onda kaze od kojih struktura se ona sastoji
+  - sluze za implementaciju semantike jer parsira dio jezika koje mozemo analizirati odnosno kazemo racunalu sto moze napraviti
+
+  
+  
+*/
