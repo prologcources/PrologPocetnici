@@ -8,4 +8,10 @@ copy(?src,?dst):-str_cat('cp ',?src,' ',?dst,?naredba)@\plg,
 move(?src,?dst):-str_cat('mv ',?src,' ',?dst,?naredba)@\plg,
 	shell(?naredba)@\plg(shell).
 
+shell('touch datoteka.txt')@\plg(shell).
+
+
+
+
+
 
