@@ -1,0 +1,16 @@
+:- import member/2 from basics.
+
+htmldiv(htmldiv(X, S )) --> ['<div'], atributi(X), ['>'], sadrzaj(S), ['</div>'].
+
+atributi(atributi([X])) --> att(X).
+atributi(atributi([X|R])) --> att(X), atributi(atributi(R)).
+
+att(att(S)) --> [S].
+
+sadrzaj(sadrzaj([S])) --> [S].
+sadrzaj(sadrzaj([S|R])) --> [S], sadrzaj(sadrzaj(R)).
+
+/*
+htmldiv(X, ['<div', 'style', '=', 'font-size: 10px', '>', neki, sadrzaj, '</div>'], []).
+
+*/

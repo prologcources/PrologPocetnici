@@ -1,0 +1,2 @@
+shell[rename(?d1, ?d2)]:-
+	rename(?d1, ?d2)@\plg(shell).
