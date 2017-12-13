@@ -1,0 +1,11 @@
+
+touch(?naziv):-str_cat('touch ',?naziv,?naredba)@\plg,
+	shell(?naredba)@\plg(shell).
+
+copy(?src,?dst):-str_cat('cp ',?src,' ',?dst,?naredba)@\plg,
+	shell(?naredba)@\plg(shell).
+
+move(?src,?dst):-str_cat('mv ',?src,' ',?dst,?naredba)@\plg,
+	shell(?naredba)@\plg(shell).
+
+
